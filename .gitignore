@@ -1,0 +1,71 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Qt template
+# C++ objects and libs
+
+*.slo
+*.lo
+*.o
+*.a
+*.la
+*.lai
+*.so
+*.dll
+*.dylib
+
+# Qt-es
+
+/.qmake.cache
+/.qmake.stash
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+Makefile*
+*build-*
+
+# QtCreator
+
+*.autosave
+
+# QtCtreator Qml
+*.qmlproject.user
+*.qmlproject.user.*
+
+# QtCtreator CMake
+CMakeLists.txt.user*
+
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen### C++ template
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
