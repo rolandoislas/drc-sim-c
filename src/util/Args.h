@@ -10,6 +10,8 @@ class Args {
 
 public:
     static void parse_args(char *args);
+
+    static char *region;
 };
 
 

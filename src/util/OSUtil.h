@@ -5,11 +5,12 @@
 #ifndef DRC_SIM_C_OSUTIL_H
 #define DRC_SIM_C_OSUTIL_H
 
-
 class OSUtil {
 
 public:
     static void log_sys_info();
+
+    static bool exists(const char *path);
 };
 
 

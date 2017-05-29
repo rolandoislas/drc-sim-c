@@ -69,3 +69,11 @@ gen### C++ template
 *.exe
 *.out
 *.app
+drc_sim_c
+
+# Cmake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.cbp
+install_manifest.txt

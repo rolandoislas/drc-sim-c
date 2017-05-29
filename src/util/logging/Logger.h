@@ -5,6 +5,7 @@
 #ifndef DRC_SIM_C_LOGGER_H
 #define DRC_SIM_C_LOGGER_H
 
+#include <iostream>
 
 class Logger {
 
@@ -27,6 +28,13 @@ public:
     static const int ERROR = 5;
 
     static const std::string DRC;
+    static const std::string SERVER;
+    static const std::string VIDEO;
+    static const std::string AUDIO;
+
+    static bool is_level_enabled(const int level);
+
+    static const char * to_hex(unsigned char *data, size_t size);
 
 private:
     static int log_level;

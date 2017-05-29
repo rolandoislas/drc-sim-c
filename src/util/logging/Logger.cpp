@@ -6,13 +6,17 @@
 #include "Logger.h"
 #include <cstdarg>
 #include <fstream>
-#include <iostream>
 #include <string.h>
+#include <sstream>
+#include <assert.h>
 
 using namespace std;
 
 int Logger::log_level = INFO;
 const string Logger::DRC = "DRCSIM";
+const string Logger::SERVER = "SERVER";
+const string Logger::VIDEO = "VIDEO";
+const string Logger::AUDIO = "AUDIO";
 
 void Logger::info(const string log_name, const string message, ...) {
     va_list args;
@@ -20,13 +24,13 @@ void Logger::info(const string log_name, const string message, ...) {
     log(log_name, INFO, message, args);
 }
 
-void Logger::log(const string log_name, const int log_level, const std::string message, va_list args) {
-    if (get_level() >= log_level or log_level == ERROR) {
+void Logger::log(const string log_name, const int level, const std::string message, va_list args) {
+    if (is_level_enabled(level) or level == ERROR) {
         time_t cur_time;
         time(&cur_time);
         char time_string[100];
         strftime(time_string, sizeof(time_string), "%F %T", localtime(&cur_time));
-        printf("%s %s:%s ", time_string, get_level_str(log_level), log_name.c_str());
+        printf("%s %s:%s ", time_string, get_level_str(level), log_name.c_str());
         vprintf((message + "\n").c_str(), args);
     }
 }
@@ -63,8 +67,8 @@ int Logger::get_level() {
     return log_level;
 }
 
-char *Logger::get_level_str(const int log_level) {
-    switch (log_level) {
+char *Logger::get_level_str(const int level) {
+    switch (level) {
         case INFO:
             return (char *) "INFO";
         case DEBUG:
@@ -90,4 +94,18 @@ void Logger::error(const string log_name, const string message, ...) {
     char *error_message = strerror_r(errno, buf, 256);
     debug(log_name, error_message);
     exit(errno);
+}
+
+bool Logger::is_level_enabled(const int level) {
+    return get_level() >= level;
+}
+
+const char * Logger::to_hex(unsigned char *data, size_t size) {
+    stringstream hex_string;
+    hex_string << hex;
+    for (int byte = 0; byte < size; ++byte) {
+        hex_string << (int)data[byte] << " ";
+    }
+    assert(strlen(hex_string.str().c_str()) >= size);
+    return hex_string.str().c_str();
 }

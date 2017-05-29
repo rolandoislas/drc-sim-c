@@ -4,15 +4,16 @@
 
 #include <iostream>
 #include <sstream>
-#include "VideoPacket.h"
+#include <assert.h>
+#include "VideoPacketWiiU.h"
 #include "../../../util/BitUtil.h"
 #include "../../../util/logging/Logger.h"
 
 using namespace std;
 
-VideoPacket::VideoPacket(unsigned char *packet, size_t packet_size) {
+VideoPacketWiiU::VideoPacketWiiU(unsigned char *packet, size_t packet_size) : Packet(packet, packet_size) {
     // Parse
-    header = (VideoPacketHeader*)packet;
+    header = (VideoPacketHeaderWiiU*)packet;
     if (Logger::get_level() >= Logger::VERBOSE)
         print_debug(packet, packet_size);
 #if __BYTE_ORDER == LITTLE_ENDIAN
@@ -23,10 +24,15 @@ VideoPacket::VideoPacket(unsigned char *packet, size_t packet_size) {
     header->seq_id = BitUtil::reverse(header->seq_id, 10);
     header->payload_size = BitUtil::reverse(header->payload_size, 11);
     header->timestamp = BitUtil::reverse(header->timestamp, 32);
+    for (int byte = 0; byte < sizeof(header->extended_header); ++byte)
+        header->extended_header[byte] = (unsigned char) BitUtil::reverse(header->extended_header[byte], 8);
+    for (int byte = 0; byte < header->payload_size; ++byte)
+        header->payload[byte] = (unsigned char) BitUtil::reverse(header->payload[byte], 8);
 #endif
+    assert(header->payload_size <= 2048);
 }
 
-void VideoPacket::print_debug(unsigned char *packet, size_t packet_size) {
+void VideoPacketWiiU::print_debug(unsigned char *packet, size_t packet_size) {
     stringstream hex_string;
     hex_string << hex;
     for (int byte = 0; byte < packet_size; byte++)

@@ -4,6 +4,8 @@
 
 #include "Args.h"
 
-void Args::parse_args(char *args) {
+char* Args::region;
 
+void Args::parse_args(char *args) {
+    region = (char *) "na"; // TODO add args for region
 }

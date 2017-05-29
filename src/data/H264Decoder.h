@@ -1,0 +1,32 @@
+//
+// Created by rolando on 5/15/17.
+//
+
+#ifndef DRC_SIM_C_H264DECODER_H
+#define DRC_SIM_C_H264DECODER_H
+
+extern "C" {
+    #include <libavcodec/avcodec.h>
+    #include <libswscale/swscale.h>
+};
+
+
+class H264Decoder {
+
+public:
+    H264Decoder();
+
+    int image(uint8_t *nals, int nals_size, uint8_t *image);
+
+private:
+    AVPacket av_packet;
+    SwsContext *sws_context;
+    AVCodecContext *context;
+    AVFrame *frame;
+    AVFrame *out_frame;
+    uint8_t *out_buffer;
+    static void log_av(void * avcl, int level, const char * fmt, va_list vl);
+};
+
+
+#endif //DRC_SIM_C_H264DECODER_H
