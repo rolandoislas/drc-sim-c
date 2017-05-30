@@ -23,10 +23,14 @@ H264Decoder::H264Decoder() {
 
     assert(avcodec_open2(context, codec, NULL) == 0);
 
+#if LIBAVCODEC_VERSION_MAJOR < 55
+    frame = avcodec_alloc_frame();
+    out_frame = avcodec_alloc_frame();
+#else
     frame = av_frame_alloc();
-    assert(frame != NULL);
-
     out_frame = av_frame_alloc();
+#endif
+    assert(frame != NULL);
     assert(out_frame != NULL);
 
     // Dimensions

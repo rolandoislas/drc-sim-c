@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 2.8.12.2)
 project(drc_sim_c)
 
 set(CMAKE_CXX_STANDARD 11)
