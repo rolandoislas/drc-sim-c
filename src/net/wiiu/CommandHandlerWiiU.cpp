@@ -21,7 +21,8 @@ char CommandHandlerWiiU::hex_array[] = {'0', '1', '2', '3', '4', '5', '6', '7', 
 CommandHandlerWiiU::CommandHandlerWiiU() {
     // Get command responses
     char path[100];
-    sprintf(path, "command/%s.json", Args::region == "none" ? "na" : Args::region);
+    send_blank_response = strcmp(Args::region, "none") == 0;
+    sprintf(path, "command/%s.json", send_blank_response ? "na" : Args::region);
     Resource command_json(path);
     char *json_file = new char[1000000];
     int json_file_size = command_json.as_bytes(json_file);
@@ -65,7 +66,7 @@ void CommandHandlerWiiU::update(unsigned char *packet, size_t packet_size, socka
 void CommandHandlerWiiU::ack(const CommandPacketWiiU *packet) {
     CommandPacketHeaderWiiU response;
 #if __BYTE_ORDER == BIG_ENDIAN
-    // TODO
+    // TODO big endian
 #else
     response.packet_type = packet->header->packet_type == packet->PT_REQ ? packet->PT_REQ_ACK : packet->PT_RESP_ACK;
     response.cmd_id = packet->header->cmd_id;
@@ -139,6 +140,8 @@ void CommandHandlerWiiU::send_response_cmd0(const CommandPacketWiiU *packet, uns
 
 void CommandHandlerWiiU::send_response(CommandPacketHeaderWiiU *header, void *header_cmd,
                                        unsigned char *payload, int payload_size) {
+    if (send_blank_response)
+        memset(payload, 0, (size_t) payload_size);
     send_command(header, header_cmd, payload, payload_size, CommandPacketWiiU::PT_RESP);
 }
 
@@ -155,7 +158,7 @@ void CommandHandlerWiiU::send_command(CommandPacketHeaderWiiU *header, void *hea
     header->packet_type = packet_type;
     header->payload_size = (uint16_t) full_payload_size;
 #else
-    // TODO
+    // TODO big endian
 #endif
     if (header_cmd_size > 0)
         memcpy(header->payload, header_cmd, (size_t) header_cmd_size);

@@ -41,6 +41,8 @@ private:
     json_value *command_responses;
 
     int hex_str_to_bytes(char *str, int str_size, unsigned char *bytes);
+
+    bool send_blank_response;
 };
 
 

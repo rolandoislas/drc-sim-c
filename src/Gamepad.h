@@ -26,6 +26,7 @@ public:
     static void sendwiiu(int fd, const void *data, size_t data_size, int port);
 
     static bool running;
+    static AudioHandlerWiiU audio_handler;
 private:
     void print_init();
 
@@ -40,7 +41,6 @@ private:
     bool received_wii_u_packet;
     VideoHandlerWiiU video_handler;
     CommandHandlerWiiU command_handler;
-    AudioHandlerWiiU audio_handler;
     MessageHandlerWiiU message_handler;
     HidHandlerWiiU hid_handler;
 

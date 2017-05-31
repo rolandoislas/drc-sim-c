@@ -64,6 +64,8 @@ public:
 
     double get_joystick_input(int id);
 
+    static bool get_mic_blow_input();
+
     bool running;
 
     InputPacketHeaderWiiU *packet;
@@ -77,9 +79,9 @@ public:
     static InputTouchpad *input_touchpad;
     static InputMicBlow *input_mic_blow;
 
-    bool is_input_within_time(timespec input_time);
+    static bool is_input_within_time(timespec input_time);
 
-    time_t get_delta_vs_current(timespec _time);
+    static time_t get_delta_vs_current(timespec _time);
 
     static void set_input_button(uint16_t button);
 

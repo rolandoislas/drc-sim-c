@@ -118,7 +118,7 @@ void Server::register_client_socket(in_port_t port, in_addr_t addr, const int ty
     client_socket.addr = addr;
     client_socket.port = port;
     client_socket.ping_time = time(0);
-    client_socket.tries = 3;
+    client_socket.tries = 2;
     client_sockets.push_back(client_socket);
     char str_address[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &addr, str_address, INET_ADDRSTRLEN);

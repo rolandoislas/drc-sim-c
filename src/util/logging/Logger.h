@@ -31,6 +31,7 @@ public:
     static const std::string SERVER;
     static const std::string VIDEO;
     static const std::string AUDIO;
+    static const std::string CONFIG;
 
     static bool is_level_enabled(const int level);
 

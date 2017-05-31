@@ -12,6 +12,12 @@ class AudioHandlerWiiU : PacketHandler {
     void update(unsigned char *packet, size_t packet_size, sockaddr_in *from_address,
                 unsigned int *address_size) override;
 
+public:
+    AudioHandlerWiiU();
+
+    void send_mic_blow();
+
+    unsigned char *rand_audio;
 };
 
 

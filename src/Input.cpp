@@ -6,11 +6,11 @@
 #include <netinet/in.h>
 #include <iostream>
 #include <zconf.h>
-#include <arpa/inet.h>
 #include "Input.h"
 #include "Gamepad.h"
 #include "util/BitUtil.h"
 #include "data/Constants.h"
+#include "util/Args.h"
 
 InputButton *Input::input_button;
 InputButtonExtra *Input::input_button_extra;
@@ -105,20 +105,12 @@ void Input::send_hid_update() {
     packet->gyroscope.yaw = 0;
     packet->gyroscope.pitch = 0;
 #else
-    // TODO
+    // TODO big endian
 #endif
     packet->fw_version_neg = 215;
 
     Gamepad::sendwiiu(Gamepad::socket_hid, packet, sizeof(InputPacketHeaderWiiU), PORT_WII_HID);
     seq_id = (uint16_t) ((seq_id + 1) % 65535);
-
-
-    sockaddr_in address;
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = inet_addr("127.0.0.1");
-    address.sin_port = htons((uint16_t) 60000);
-    sendto(Gamepad::socket_hid, packet, sizeof(InputPacketHeaderWiiU), 0, (sockaddr *) &address, sizeof(address));
-    return;
 }
 
 uint16_t Input::get_button_input() {
@@ -160,9 +152,14 @@ double Input::get_joystick_input(int id) {
 void Input::get_touch_input(InputTouchpad *coords) {
     if (!is_input_within_time(input_touchpad->time))
         return;
-    // TODO check if these bounds are correct
     coords->x = translate_bounds(input_touchpad->x, 0, input_touchpad->width, 120, 4000);
     coords->y = translate_bounds(input_touchpad->y, 0, input_touchpad->height, 4000, 120);
+}
+
+bool Input::get_mic_blow_input() {
+    if (!is_input_within_time(input_mic_blow->time))
+        return false;
+    return input_mic_blow->blow;
 }
 
 uint16_t Input::translate_bounds(int old_value, int old_min, int old_max, int new_min, int new_max) {
@@ -170,7 +167,7 @@ uint16_t Input::translate_bounds(int old_value, int old_min, int old_max, int ne
 }
 
 bool Input::is_input_within_time(timespec input_time) {
-    return get_delta_vs_current(input_time) <= 200000000; // TODO add to config (100 milliseconds)
+    return get_delta_vs_current(input_time) <= Args::input_delay;
 }
 
 time_t Input::get_delta_vs_current(timespec _time) {

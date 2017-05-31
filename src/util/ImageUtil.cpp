@@ -6,6 +6,7 @@
 #include <cstring>
 #include "ImageUtil.h"
 #include "../data/Constants.h"
+#include "Args.h"
 
 extern "C" {
     #include <jpeglib.h>
@@ -27,7 +28,7 @@ int ImageUtil::rgb_to_jpeg(uint8_t *rgb, uint8_t *jpeg) {
     cinfo.in_color_space = JCS_RGB;
     jpeg_set_defaults(&cinfo);
 
-    jpeg_set_quality(&cinfo, 75, true); // TODO config quality
+    jpeg_set_quality(&cinfo, Args::video_quality, true);
     jpeg_start_compress(&cinfo, true);
     int row_stride = WII_VIDEO_WIDTH * 3;
     JSAMPROW row_pointer[1];

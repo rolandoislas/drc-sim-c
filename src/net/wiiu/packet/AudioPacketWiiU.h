@@ -9,6 +9,7 @@
 #include <cstdint>
 #include "../../Packet.h"
 
+#pragma pack(1)
 typedef struct {
     unsigned format : 3;
     bool mono : 1;
@@ -19,6 +20,7 @@ typedef struct {
     unsigned timestamp : 32;
     unsigned char payload[2048];
 } AudioPacketHeaderWiiU;
+#pragma pack(0)
 
 typedef struct {
     uint32_t timestamp;

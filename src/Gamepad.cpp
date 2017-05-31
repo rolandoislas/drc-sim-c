@@ -10,6 +10,7 @@
 #include "Gamepad.h"
 #include "util/logging/Logger.h"
 #include "data/Constants.h"
+#include "util/Args.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ int Gamepad::socket_aud;
 int Gamepad::socket_vid;
 int Gamepad::socket_hid;
 bool Gamepad::running;
+AudioHandlerWiiU Gamepad::audio_handler;
 
 void Gamepad::run() {
     Gamepad gamepad;
@@ -52,13 +54,15 @@ void Gamepad::connect() {
     // AUD
     address.sin_port = htons(PORT_WII_AUD);
     socket_aud = socket(AF_INET, SOCK_DGRAM, 0);
-    if (bind(socket_aud, (const sockaddr *) &address, sizeof(address)) == -1)
-        Logger::error(Logger::DRC, "Could not bind AUD socket.");
+    if (!Args::disable_audio)
+        if (bind(socket_aud, (const sockaddr *) &address, sizeof(address)) == -1)
+            Logger::error(Logger::DRC, "Could not bind AUD socket.");
     // VID
     address.sin_port = htons(PORT_WII_VID);
     socket_vid = socket(AF_INET, SOCK_DGRAM, 0);
-    if (bind(socket_vid, (const sockaddr *) &address, sizeof(address)) == -1)
-        Logger::error(Logger::DRC, "Could not bind VID socket.");
+    if (!Args::disable_video)
+        if (bind(socket_vid, (const sockaddr *) &address, sizeof(address)) == -1)
+            Logger::error(Logger::DRC, "Could not bind VID socket.");
     // MSG
     address.sin_port = htons(PORT_WII_MSG);
     socket_msg = socket(AF_INET, SOCK_DGRAM, 0);

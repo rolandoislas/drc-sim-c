@@ -12,7 +12,7 @@ find_package(JPEG REQUIRED)
 include_directories(${AVCODEC_INCLUDE_DIRS} ${SWSCALE_INCLUDE_DIRS} ${FFMPEG_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} include)
 add_definitions(${AVCODEC_DEFINITIONS} ${SWSCALE_DEFINITIONS} ${FFMPEG_DEFINITIONS})
 
-set(SOURCE_FILES src/main.cpp src/util/Args.cpp src/util/Args.h src/data/Config.cpp src/data/Config.h
+set(SOURCE_FILES src/main.cpp src/util/Args.cpp src/util/Args.h
         src/util/logging/Logger.cpp src/util/logging/Logger.h src/util/OSUtil.cpp src/util/OSUtil.h src/data/Constants.h
         src/Gamepad.cpp src/Gamepad.h src/net/wiiu/VideoHandlerWiiU.cpp src/net/wiiu/VideoHandlerWiiU.h
         src/net/wiiu/packet/VideoPacketWiiU.cpp src/net/wiiu/packet/VideoPacketWiiU.h src/util/BitUtil.cpp

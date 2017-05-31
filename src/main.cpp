@@ -1,7 +1,6 @@
 #include <iostream>
 #include <thread>
 #include "util/Args.h"
-#include "data/Config.h"
 #include "util/OSUtil.h"
 #include "util/logging/Logger.h"
 #include "data/Constants.h"
@@ -20,8 +19,7 @@ void run();
 using namespace std;
 
 int main(int argc, char **args) {
-    Args::parse_args((char *) args);
-    Config::init();
+    Args::parse_args(argc, args);
     initialize_loggers();
     log_start_info();
     log_level();
@@ -52,5 +50,5 @@ void log_start_info() {
 }
 
 void initialize_loggers() {
-    Logger::set_level(Logger::FINER);
+    Logger::set_level(Args::log_level);
 }

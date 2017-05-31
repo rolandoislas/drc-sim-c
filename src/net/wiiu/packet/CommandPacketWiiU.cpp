@@ -10,7 +10,7 @@ CommandPacketWiiU::CommandPacketWiiU(unsigned char *packet, size_t packet_size) 
     packet_raw = packet;
     header = (CommandPacketHeaderWiiU*)packet;
 #if __BYTE_ORDER == BIG_ENDIAN
-    // TODO little to big
+    // TODO big endian
 #endif
     switch (header->cmd_id) {
         case 0:
@@ -39,7 +39,7 @@ CommandPacketWiiU::CommandPacketWiiU(unsigned char *packet, size_t packet_size) 
         case 2:
             header_cmd2 = (CommandPacketHeaderWiiUCommandTwo*)header->payload;
 #if __BYTE_ORDER == BIG_ENDIAN
-            // TODO little to big
+            // TODO big endian
 #endif
             break;
         default:
