@@ -35,9 +35,9 @@ void Args::parse_args(int argc, char **argv) {
     // Region
     region = get_arg("-region", "none");
     region = strcmp(region, "none") != 0 ? region : get_arg("-r", "none");
-    for (int cchar = 0; cchar < strlen(region); ++cchar) {
-        region[cchar] = (char) tolower(region[cchar]);
-    }
+    for (int cchar = 0; cchar < strlen(region); ++cchar)
+        if (!islower(region[cchar]))
+            region[cchar] = (char) tolower(region[cchar]);
     // Video
     video_quality = get_int("-video-quality", 0, 100, 75);
     disable_video = has_flag("--disable-video") or has_flag("--no-video");

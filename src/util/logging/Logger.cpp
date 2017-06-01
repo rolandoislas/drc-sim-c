@@ -33,6 +33,7 @@ void Logger::log(const string log_name, const int level, const std::string messa
         strftime(time_string, sizeof(time_string), "%F %T", localtime(&cur_time));
         printf("%s %s:%s ", time_string, get_level_str(level), log_name.c_str());
         vprintf((message + "\n").c_str(), args);
+        cout << flush;
     }
 }
 
