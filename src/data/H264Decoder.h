@@ -8,6 +8,9 @@
 extern "C" {
     #include <libavcodec/avcodec.h>
     #include <libswscale/swscale.h>
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(54, 6, 0)
+    #include <libavutil/imgutils.h>
+#endif
 };
 
 
