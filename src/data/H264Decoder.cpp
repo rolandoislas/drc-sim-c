@@ -23,7 +23,7 @@ H264Decoder::H264Decoder() {
 
     assert(avcodec_open2(context, codec, NULL) == 0);
 
-#if LIBAVCODEC_VERSION_MAJOR < 55
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 28, 1)
     frame = avcodec_alloc_frame();
     out_frame = avcodec_alloc_frame();
 #else
@@ -38,13 +38,13 @@ H264Decoder::H264Decoder() {
                                  WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_RGB24,
                                  SWS_FAST_BILINEAR, NULL, NULL, NULL);
     int bytes_req = 0;
-#if LIBAVCODEC_VERSION_MAJOR < 57
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(54, 6, 0)
     bytes_req = avpicture_get_size(AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT);
 #else
     bytes_req = av_image_get_buffer_size(AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, 1);
 #endif
     out_buffer = new uint8_t[bytes_req];
-#if LIBAVCODEC_VERSION_MAJOR < 57
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(54, 6, 0)
     assert(avpicture_fill((AVPicture *) out_frame, out_buffer, AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT)
            == bytes_req);
 #else
