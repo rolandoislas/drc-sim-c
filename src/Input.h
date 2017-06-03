@@ -52,7 +52,7 @@ public:
 
     timespec last_sent_time;
 
-    double HID_UPDATE_INTERVAL = 1000000000. / 180.; // Nanoseconds
+    timespec HID_UPDATE_INTERVAL;
 
     void send_hid_update();
 
@@ -81,7 +81,7 @@ public:
 
     static bool is_input_within_time(timespec input_time);
 
-    static time_t get_delta_vs_current(timespec _time);
+    static timespec get_delta_vs_current(timespec _time);
 
     static void set_input_button(uint16_t button);
 

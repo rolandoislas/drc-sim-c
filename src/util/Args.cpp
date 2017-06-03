@@ -10,7 +10,7 @@
 char* Args::region;
 int Args::log_level;
 int Args::video_quality;
-int32_t Args::input_delay; // Nanoseconds
+timespec Args::input_delay;
 int Args::argc;
 char **Args::argv;
 bool Args::disable_audio;
@@ -44,12 +44,11 @@ void Args::parse_args(int argc, char **argv) {
     // Audio
     disable_audio = has_flag("--disable-audio") or has_flag("--no-audio");
     // Input
-    input_delay = get_int("-input-delay", 0, 1000, 100); // milliseconds
-    input_delay *= 1000000; // To nanoseconds
-
+    input_delay.tv_sec = 0;
+    input_delay.tv_nsec = get_int("-input-delay", 0, 1000, 100) * 1000000; // milliseconds to nanoseconds
     // Log args
     Logger::info(Logger::CONFIG, "Region: %s", region);
-    Logger::info(Logger::CONFIG, "Input delay: %dms", input_delay / 1000000);
+    Logger::info(Logger::CONFIG, "Input delay: %dms", input_delay.tv_nsec / 1000000);
     Logger::info(Logger::CONFIG, "Video quality: %d%%", video_quality);
     Logger::info(Logger::CONFIG, "Video enabled: %d", !disable_video);
     Logger::info(Logger::CONFIG, "Audio enabled: %d", !disable_audio);

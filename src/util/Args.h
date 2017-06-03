@@ -7,6 +7,7 @@
 
 
 #include <cstdint>
+#include <time.h>
 
 class Args {
 
@@ -16,7 +17,7 @@ public:
     static char *region;
     static int log_level;
     static int video_quality;
-    static int32_t input_delay;
+    static timespec input_delay;
 
     static char *get_arg(const char *arg_name, const char *default_value);
 
