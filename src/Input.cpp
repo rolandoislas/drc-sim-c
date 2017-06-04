@@ -19,6 +19,8 @@ InputTouchpad *Input::input_touchpad;
 InputMicBlow *Input::input_mic_blow;
 
 Input::Input() {
+    HID_UPDATE_INTERVAL.tv_sec = 0;
+    HID_UPDATE_INTERVAL.tv_nsec = (__syscall_slong_t) floor(1000000000. / 180.);
     packet = new InputPacketHeaderWiiU();
     clock_gettime(CLOCK_MONOTONIC_RAW, &last_sent_time);
     input_button = new InputButton();
@@ -40,8 +42,8 @@ void Input::run() {
 }
 
 void Input::update() {
-    time_t delta = get_delta_vs_current(last_sent_time);
-    if (delta >= HID_UPDATE_INTERVAL) {
+    timespec delta = get_delta_vs_current(last_sent_time);
+    if (delta.tv_sec > 0 or delta.tv_nsec >= HID_UPDATE_INTERVAL.tv_nsec) {
         clock_gettime(CLOCK_MONOTONIC_RAW, &last_sent_time);
         send_hid_update();
     }
@@ -167,14 +169,17 @@ uint16_t Input::translate_bounds(int old_value, int old_min, int old_max, int ne
 }
 
 bool Input::is_input_within_time(timespec input_time) {
-    return get_delta_vs_current(input_time) <= Args::input_delay;
+    timespec delta = get_delta_vs_current(input_time);
+    return delta.tv_sec <= Args::input_delay.tv_sec and delta.tv_nsec <= Args::input_delay.tv_nsec;
 }
 
-time_t Input::get_delta_vs_current(timespec _time) {
+timespec Input::get_delta_vs_current(timespec _time) {
     timespec current_time;
     clock_gettime(CLOCK_MONOTONIC_RAW, &current_time);
-    return (current_time.tv_sec * 1000000000 + current_time.tv_nsec) -
-                   (_time.tv_sec * 1000000000 + _time.tv_nsec);
+    timespec delta;
+    delta.tv_sec = current_time.tv_sec - _time.tv_sec;
+    delta.tv_nsec = current_time.tv_nsec - _time.tv_nsec;
+    return delta;
 }
 
 void Input::set_input_button(uint16_t button) {
