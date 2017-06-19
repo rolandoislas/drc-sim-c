@@ -11,7 +11,7 @@
 
 // General
 static const std::string NAME = "DRC Sim Server";
-static const std::string VERSION = "1.0.1";
+static const std::string VERSION = "1.0.2";
 
 // Ports
 static const uint16_t PORT_WII_MSG = 50110;

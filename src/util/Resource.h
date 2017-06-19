@@ -11,9 +11,15 @@ class Resource {
 public:
     Resource(const char* rel_path);
 
+    Resource(const char *rel_path, bool throw_error);
+
     int as_bytes(char *buffer);
 
     std::string path;
+
+    void init(const char *rel_path, bool throw_error);
+
+    bool exists();
 };
 
 
