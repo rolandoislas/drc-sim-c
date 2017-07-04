@@ -23,7 +23,12 @@ CommandHandlerWiiU::CommandHandlerWiiU() {
     char path[100];
     send_blank_response = strcmp(Args::region, "none") == 0;
     sprintf(path, "command/%s.json", send_blank_response ? "na" : Args::region);
-    Resource command_json(path);
+    Resource command_json(path, false);
+    if (!command_json.exists()) {
+        Logger::info(Logger::DRC, "Specified region not found. Using default values instead.");
+        send_blank_response = true;
+        command_json = Resource("command/na.json");
+    }
     char *json_file = new char[1000000];
     int json_file_size = command_json.as_bytes(json_file);
     command_responses = json_parse(json_file, (size_t) json_file_size);
