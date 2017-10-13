@@ -77,3 +77,6 @@ CMakeCache.txt
 cmake_install.cmake
 *.cbp
 install_manifest.txt
+
+# Generated data
+util/dump/
