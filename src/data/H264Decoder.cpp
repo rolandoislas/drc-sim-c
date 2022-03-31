@@ -11,11 +11,13 @@
 
 H264Decoder::H264Decoder() {
     av_log_set_callback(log_av);
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 10, 100)
     avcodec_register_all();
+#endif
 
     av_init_packet(&av_packet);
 
-    AVCodec *codec = avcodec_find_decoder(AV_CODEC_ID_H264);
+    const AVCodec *codec = avcodec_find_decoder(AV_CODEC_ID_H264);
     assert(codec != NULL);
 
     context = avcodec_alloc_context3(codec);
@@ -57,11 +59,15 @@ int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
     av_packet.data = nals;
     av_packet.size = nals_size;
 
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 10, 100)
     int got_frame = 0;
-    int frame_size = avcodec_decode_video2(context, frame, &got_frame, &av_packet);
+    avcodec_decode_video2(context, frame, &got_frame, &av_packet);
+#else
+    int got_frame = (avcodec_send_packet(context, &av_packet) == 0 &&
+    	avcodec_receive_frame(context, frame) == 0);
+#endif
 
     if (got_frame) {
-        assert(frame_size == av_packet.size);
         sws_scale(sws_context, (const uint8_t *const *) frame->data, frame->linesize, 0, WII_VIDEO_HEIGHT,
                   out_frame->data, out_frame->linesize);
     }
