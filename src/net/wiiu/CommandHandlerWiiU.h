@@ -37,7 +37,7 @@ private:
 
     int hex_char_to_int(char hex_char);
 
-    static char hex_array[16];
+    static const char hex_array[16];
     json_value *command_responses;
 
     int hex_str_to_bytes(char *str, int str_size, unsigned char *bytes);

@@ -105,7 +105,6 @@ void Server::broadcast_video(uint8_t *frame, size_t size) {
 
 void Server::handle_packet(int fd, PacketHandler *handler) {
     unsigned char data[2048];
-    memset(data, 0, sizeof(data));
     sockaddr_in address;
     socklen_t address_size = sizeof(address);
     ssize_t size = recvfrom(fd, &data, sizeof(data), 0, (sockaddr *) &address, &address_size);
@@ -179,18 +178,13 @@ void Server::broadcast_audio(unsigned char *data, size_t size) {
 }
 
 void Server::broadcast_command(uint16_t command_id) {
-    CommandPacketHeaderServer header;
-    header.type = htons(command_id);
-    header.payload_size = htons(0);
-    unsigned char *packet = new unsigned char[sizeof(CommandPacketHeaderServer)];
-    memcpy(packet, &header, sizeof(CommandPacketHeaderServer));
-    broadcast_command(packet, sizeof(CommandPacketHeaderServer));
-    delete [] packet;
+    CommandPacketHeaderServer packet = { .type = htons(command_id), .payload_size = htons(0) };
+    broadcast_command((unsigned char *)&packet, sizeof(CommandPacketHeaderServer));
 }
 
 void Server::broadcast_media(unsigned char *data, size_t size, const int type) {
     vector<ClientSocket> client_sockets_temp(Server::client_sockets);
-    unsigned char *packet = new unsigned char[size + sizeof(PACKET_DELIMITER)];
+    unsigned char packet[size + sizeof(PACKET_DELIMITER)];
     memcpy(packet, &PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
     memcpy(packet + sizeof(PACKET_DELIMITER), data, size);
     for (int socket = 0; socket < client_sockets.size(); ++socket) {
@@ -209,7 +203,6 @@ void Server::broadcast_media(unsigned char *data, size_t size, const int type) {
                 remaining -= sent;
         }
     };
-    delete [] packet;
 }
 
 void Server::broadcast_command(unsigned char *packet, size_t packet_size) {

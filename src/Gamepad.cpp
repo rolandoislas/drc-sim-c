@@ -103,8 +103,7 @@ void Gamepad::update() {
 }
 
 void Gamepad::handle_packet(int fd, PacketHandler *handler) {
-    unsigned char data[2048];
-    memset(data, 0, sizeof(data));
+    static unsigned char data[2048];
     ssize_t size = recv(fd, &data, sizeof(data), 0);
     (*handler).update(data, (size_t) size);
 }

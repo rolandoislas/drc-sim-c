@@ -9,15 +9,17 @@
 #include "../PacketHandler.h"
 
 class AudioHandlerWiiU : PacketHandler {
-    void update(unsigned char *packet, size_t packet_size, sockaddr_in *from_address,
-                unsigned int *address_size) override;
 
 public:
     AudioHandlerWiiU();
 
+private:
+    void update(unsigned char *packet, size_t packet_size, sockaddr_in *from_address,
+                unsigned int *address_size) override;
+
     void send_mic_blow();
 
-    unsigned char *rand_audio;
+    unsigned char rand_audio[512];
 };
 
 
