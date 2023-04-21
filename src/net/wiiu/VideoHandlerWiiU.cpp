@@ -49,17 +49,19 @@ void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockadd
     memcpy(frame + frame_index, video_packet.header->payload, video_packet.header->payload_size);
     frame_index += video_packet.header->payload_size;
 
-    if (is_streaming and video_packet.header->frame_end) {
-        size_t size = h264_nal_encapsulate(is_idr, frame, frame_index, nals);
-        size = decoder.image(nals, size, image_buf);
-        if (size) {
-            size = ImageUtil::rgb_to_jpeg(image_buf, image_buf, sizeof(image_buf));
-            if (size)
-                Server::broadcast_video(image_buf, size);
+    if (video_packet.header->frame_end) {
+        if (is_streaming) {
+            size_t size = h264_nal_encapsulate(is_idr, frame, frame_index, nals);
+            size = decoder.image(nals, size, image_buf[0]);
+            if (size) {
+                size = ImageUtil::rgb_to_jpeg(image_buf[0], image_buf[1], sizeof(image_buf[1]));
+                if (size)
+                    Server::broadcast_video(image_buf[1], size);
+            }
         }
-    }
-    else if (video_packet.header->frame_end and !is_streaming) {
-        Logger::debug(Logger::VIDEO, "Skipping video frame");
+        else {
+            Logger::debug(Logger::VIDEO, "Skipping video frame");
+        }
     }
 }
 
@@ -74,11 +76,11 @@ bool VideoHandlerWiiU::is_idr_packet(VideoPacketHeaderWiiU *header) {
     return false;
 }
 
-size_t VideoHandlerWiiU::h264_nal_encapsulate(bool is_idr, uint8_t *frame, size_t frame_size, uint8_t *nals) {
+size_t VideoHandlerWiiU::h264_nal_encapsulate(bool is_idr, uint8_t *frame, size_t frame_size) {
     int slice_header = is_idr ? 0x25b804ff : (0x21e003ff | ((frame_decode_num & 0xff) << 13));
     frame_decode_num++;
 
-    uint8_t *on = nals;
+    uint8_t *na = nals;
     if (is_idr) {
         static const uint8_t params[] = {
             // sps
@@ -86,8 +88,8 @@ size_t VideoHandlerWiiU::h264_nal_encapsulate(bool is_idr, uint8_t *frame, size_
             // pps
             0x00, 0x00, 0x00, 0x01, 0x68, 0xee, 0x06, 0x0c, 0xe8
         };
-        memcpy(nals, params, sizeof(params));
-        nals += sizeof(params);
+        memcpy(na, params, sizeof(params));
+        na += sizeof(params);
     }
 
     // begin slice nalu
@@ -97,18 +99,18 @@ size_t VideoHandlerWiiU::h264_nal_encapsulate(bool is_idr, uint8_t *frame, size_
                        (uint8_t) ((slice_header >> 8) & 0xff),
                        (uint8_t) (slice_header & 0xff)
     };
-    memcpy(nals + params_offset, slice, sizeof(slice));
-    nals += sizeof(slice);
+    memcpy(na + params_offset, slice, sizeof(slice));
+    na += sizeof(slice);
 
     // Frame
-    memcpy(nals, frame, 2);
-    nals += 2;
+    memcpy(na, frame, 2);
+    na += 2;
 
     // Escape codes
     for (int byte = 2; byte < frame_size; ++byte) {
-        if (frame[byte] <= 3 and *(nals - 2) == 0 and *(nals - 1) == 0)
-            *(nals++) = 3;
-        *(nals++) = frame[byte];
+        if (frame[byte] <= 3 and *(na - 2) == 0 and *(na - 1) == 0)
+            *(na++) = 3;
+        *(na++) = frame[byte];
     }
-    return nals - on;
+    return na - nals;
 }
