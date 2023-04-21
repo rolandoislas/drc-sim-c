@@ -34,7 +34,7 @@ H264Decoder::H264Decoder() {
     assert(out_frame != NULL);
 
     // Dimensions
-    sws_context = sws_getContext(WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_YUV420P,
+    sws_context = sws_getContext(854, WII_VIDEO_HEIGHT, AV_PIX_FMT_YUV420P,
                                  WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_YUV420P,
                                  SWS_POINT, NULL, NULL, NULL);
     int bytes_req;
