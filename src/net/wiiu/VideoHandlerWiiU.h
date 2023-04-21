@@ -8,7 +8,9 @@
 
 #include "../PacketHandler.h"
 #include "packet/VideoPacketWiiU.h"
+#include "../../data/Constants.h"
 #include "../../data/H264Decoder.h"
+#include "../../util/ImageUtil.h"
 
 class VideoHandlerWiiU : PacketHandler {
 
@@ -20,7 +22,8 @@ public:
 private:
     bool is_streaming;
     uint32_t frame_index;
-    uint8_t image_buf[2][2000000];
+    uint8_t av_buf[(WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT) + (((WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT) / 4) * 2)];
+    uint8_t image_buf[2000000];
 
     size_t h264_nal_encapsulate(bool is_idr, uint8_t *frame, size_t frame_size);
 
@@ -31,6 +34,7 @@ private:
     uint8_t nals[200000];
     int frame_decode_num;
     H264Decoder decoder;
+    ImageUtil imgUtil;
 };
 
 

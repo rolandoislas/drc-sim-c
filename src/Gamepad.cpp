@@ -97,6 +97,7 @@ void Gamepad::update() {
             handle_packet(socket_msg, (PacketHandler *) &message_handler);
         if (FD_ISSET(socket_hid, &read_set))
             handle_packet(socket_hid, (PacketHandler *) &hid_handler);
+    }
 }
 
 void Gamepad::handle_packet(int fd, PacketHandler *handler) {

@@ -7,7 +7,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(FFmpeg)
 find_package(Threads REQUIRED)
-find_package(JPEG REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_search_module(TURBOJPEG REQUIRED libturbojpeg)
 
 include_directories(${AVCODEC_INCLUDE_DIRS} ${SWSCALE_INCLUDE_DIRS} ${FFMPEG_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} include)
 add_definitions(${AVCODEC_DEFINITIONS} ${SWSCALE_DEFINITIONS} ${FFMPEG_DEFINITIONS})
@@ -32,7 +33,7 @@ list(APPEND SOURCE_FILES include/json.c include/json.h)
 add_executable(drc_sim_c ${SOURCE_FILES})
 
 target_link_libraries(drc_sim_c ${AVCODEC_LIBRARIES} ${SWSCALE_LIBRARIES} ${FFMPEG_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}
-        ${JPEG_LIBRARIES})
+        ${TURBOJPEG_LIBRARIES})
 
 install(TARGETS drc_sim_c RUNTIME DESTINATION /usr/local/bin/)
 install(DIRECTORY resources DESTINATION /opt/drc_sim)

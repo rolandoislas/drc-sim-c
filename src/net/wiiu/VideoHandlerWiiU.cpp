@@ -51,12 +51,12 @@ void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockadd
 
     if (video_packet.header->frame_end) {
         if (is_streaming) {
-            size_t size = h264_nal_encapsulate(is_idr, frame, frame_index, nals);
-            size = decoder.image(nals, size, image_buf[0]);
+            size_t size = h264_nal_encapsulate(is_idr, frame, frame_index);
+            size = decoder.image(nals, size, av_buf);
             if (size) {
-                size = ImageUtil::rgb_to_jpeg(image_buf[0], image_buf[1], sizeof(image_buf[1]));
+                size = imgUtil.rgb_to_jpeg(av_buf, image_buf, sizeof(image_buf));
                 if (size)
-                    Server::broadcast_video(image_buf[1], size);
+                    Server::broadcast_video(image_buf, size);
             }
         }
         else {
@@ -99,7 +99,7 @@ size_t VideoHandlerWiiU::h264_nal_encapsulate(bool is_idr, uint8_t *frame, size_
                        (uint8_t) ((slice_header >> 8) & 0xff),
                        (uint8_t) (slice_header & 0xff)
     };
-    memcpy(na + params_offset, slice, sizeof(slice));
+    memcpy(na, slice, sizeof(slice));
     na += sizeof(slice);
 
     // Frame
