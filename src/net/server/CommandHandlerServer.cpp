@@ -48,9 +48,7 @@ void CommandHandlerServer::update(unsigned char *packet, size_t packet_size, soc
 
 void CommandHandlerServer::pong(sockaddr_in *address, unsigned int *address_size) {
     Server::update_socket_time(address->sin_port, address->sin_addr.s_addr);
-    CommandPacketHeaderServer header;
-    header.type = htons(CommandPacketServer::COMMAND_PONG);
-    header.payload_size = htons(0);
+    static const CommandPacketHeaderServer header = { .type = htons(CommandPacketServer::COMMAND_PONG), .payload_size = htons(0) };
     ssize_t sent = sendto(Server::socket_cmd, &header, sizeof(CommandPacketHeaderServer), 0, (sockaddr *) address,
                           *address_size);
     if (sent == -1)

@@ -12,15 +12,13 @@ extern "C" {
     #include <jpeglib.h>
 }
 
-int ImageUtil::rgb_to_jpeg(uint8_t *rgb, uint8_t *jpeg) {
+size_t ImageUtil::rgb_to_jpeg(uint8_t *rgb, uint8_t *out, size_t outSize) {
     jpeg_compress_struct cinfo;
     jpeg_error_mgr jerr;
     cinfo.err = jpeg_std_error(&jerr);
     jerr.trace_level = 10;
     jpeg_create_compress(&cinfo);
-    unsigned long out_buffer_size = 0;
-    uint8_t *out_buffer;
-    jpeg_mem_dest(&cinfo, &out_buffer, &out_buffer_size);
+    jpeg_mem_dest(&cinfo, &out, &outSize);
 
     cinfo.image_width = (JDIMENSION) WII_VIDEO_WIDTH;
     cinfo.image_height = (JDIMENSION) WII_VIDEO_HEIGHT;
@@ -38,7 +36,6 @@ int ImageUtil::rgb_to_jpeg(uint8_t *rgb, uint8_t *jpeg) {
     }
     jpeg_finish_compress(&cinfo);
     jpeg_destroy_compress(&cinfo);
-    memcpy(jpeg, out_buffer, out_buffer_size);
-    delete [] out_buffer;
-    return (int) out_buffer_size;
+
+    return outSize;
 }

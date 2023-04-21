@@ -37,7 +37,7 @@ H264Decoder::H264Decoder() {
     sws_context = sws_getContext(WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_YUV420P,
                                  WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_RGB24,
                                  SWS_FAST_BILINEAR, NULL, NULL, NULL);
-    int bytes_req = 0;
+    int bytes_req;
 #if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(54, 6, 0)
     bytes_req = avpicture_get_size(AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT);
 #else
@@ -53,7 +53,7 @@ H264Decoder::H264Decoder() {
 #endif
 }
 
-int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
+size_t H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
     av_packet.data = nals;
     av_packet.size = nals_size;
 
@@ -67,8 +67,8 @@ int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
     }
     else
         return 0;
-    int image_size = out_frame->linesize[0] * WII_VIDEO_HEIGHT;
-    memcpy(image, out_frame->data[0], (size_t) image_size);
+    size_t image_size = out_frame->linesize[0] * WII_VIDEO_HEIGHT;
+    memcpy(image, out_frame->data[0], image_size);
     return image_size;
 }
 

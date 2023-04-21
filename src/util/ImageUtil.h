@@ -9,7 +9,7 @@
 class ImageUtil {
 
 public:
-    static int rgb_to_jpeg(uint8_t *rgb, uint8_t *jpeg);
+    static size_t rgb_to_jpeg(uint8_t *rgb, uint8_t **out);
 };
 
 
