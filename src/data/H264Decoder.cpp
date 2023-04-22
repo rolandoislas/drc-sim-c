@@ -53,7 +53,7 @@ H264Decoder::H264Decoder() {
 #endif
 }
 
-size_t H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
+uint8_t *H264Decoder::decode(uint8_t *nals, int nals_size) {
     av_packet.data = nals;
     av_packet.size = nals_size;
 
@@ -64,16 +64,11 @@ size_t H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
         assert(frame_size == av_packet.size);
         sws_scale(sws_context, (const uint8_t *const *) frame->data, frame->linesize, 0, WII_VIDEO_HEIGHT,
                   out_frame->data, out_frame->linesize);
-    }
-    else
-        return 0;
 
-    memcpy(image, out_frame->data[0], WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT);
-    image += WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT;
-    memcpy(image, out_frame->data[1], (WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT) / 4);
-    image += (WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT) / 4;
-    memcpy(image, out_frame->data[2], (WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT) / 4);
-    return (WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT) + (((WII_VIDEO_WIDTH * WII_VIDEO_HEIGHT) / 4) * 2);
+        return out_frame->data[0];
+    }
+
+    return NULL;
 }
 
 void H264Decoder::log_av(void *avcl, int level, const char *fmt, va_list vl) {

@@ -14,7 +14,7 @@ class ImageUtil {
 public:
     ImageUtil();
     ~ImageUtil();
-    size_t rgb_to_jpeg(uint8_t *rgb, uint8_t *out, size_t outSize);
+    size_t rgb_to_jpeg(uint8_t *yuv, uint8_t *out, size_t outSize);
 
 private:
     tjhandle handle;

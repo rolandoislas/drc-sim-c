@@ -52,9 +52,9 @@ void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockadd
     if (video_packet.header->frame_end) {
         if (is_streaming) {
             size_t size = h264_nal_encapsulate(is_idr, frame, frame_index);
-            size = decoder.image(nals, size, av_buf);
-            if (size) {
-                size = imgUtil.rgb_to_jpeg(av_buf, image_buf, sizeof(image_buf));
+            uint8_t *img = h264dec.decode(nals, size);
+            if (img) {
+                size = imgUtil.rgb_to_jpeg(img, image_buf, sizeof(image_buf));
                 if (size)
                     Server::broadcast_video(image_buf, size);
             }

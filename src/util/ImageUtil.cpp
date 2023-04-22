@@ -20,7 +20,7 @@ ImageUtil::~ImageUtil() {
     tjDestroy(handle);
 }
 
-size_t ImageUtil::rgb_to_jpeg(uint8_t *rgb, uint8_t *out, size_t outSize) {
-    tjCompressFromYUV(handle, rgb, WII_VIDEO_WIDTH, 4, WII_VIDEO_HEIGHT, TJSAMP_420, &out, &outSize, Args::video_quality, TJFLAG_FASTDCT | TJFLAG_NOREALLOC);
+size_t ImageUtil::rgb_to_jpeg(uint8_t *yuv, uint8_t *out, size_t outSize) {
+    tjCompressFromYUV(handle, yuv, WII_VIDEO_WIDTH, 4, WII_VIDEO_HEIGHT, TJSAMP_420, &out, &outSize, Args::video_quality, TJFLAG_FASTDCT | TJFLAG_NOREALLOC);
     return outSize;
 }
