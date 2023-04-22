@@ -5,11 +5,19 @@
 #ifndef DRC_SIM_C_IMAGEUTIL_H
 #define DRC_SIM_C_IMAGEUTIL_H
 
+extern "C" {
+    #include <turbojpeg.h>
+}
 
 class ImageUtil {
 
 public:
-    static int rgb_to_jpeg(uint8_t *rgb, uint8_t *jpeg);
+    ImageUtil();
+    ~ImageUtil();
+    size_t rgb_to_jpeg(uint8_t *yuv, uint8_t *out, size_t outSize);
+
+private:
+    tjhandle handle;
 };
 
 

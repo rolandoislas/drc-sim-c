@@ -34,26 +34,26 @@ H264Decoder::H264Decoder() {
     assert(out_frame != NULL);
 
     // Dimensions
-    sws_context = sws_getContext(WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_YUV420P,
-                                 WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_RGB24,
-                                 SWS_FAST_BILINEAR, NULL, NULL, NULL);
-    int bytes_req = 0;
+    sws_context = sws_getContext(854, WII_VIDEO_HEIGHT, AV_PIX_FMT_YUV420P,
+                                 WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_YUV420P,
+                                 SWS_POINT, NULL, NULL, NULL);
+    int bytes_req;
 #if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(54, 6, 0)
-    bytes_req = avpicture_get_size(AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT);
+    bytes_req = avpicture_get_size(AV_PIX_FMT_YUV420P, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT);
 #else
-    bytes_req = av_image_get_buffer_size(AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, 1);
+    bytes_req = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, 1);
 #endif
     out_buffer = new uint8_t[bytes_req];
 #if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(54, 6, 0)
-    assert(avpicture_fill((AVPicture *) out_frame, out_buffer, AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT)
+    assert(avpicture_fill((AVPicture *) out_frame, out_buffer, AV_PIX_FMT_YUV420P, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT)
            == bytes_req);
 #else
-    assert(av_image_fill_arrays(out_frame->data, out_frame->linesize, out_buffer, AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH,
+    assert(av_image_fill_arrays(out_frame->data, out_frame->linesize, out_buffer, AV_PIX_FMT_YUV420P, WII_VIDEO_WIDTH,
                          WII_VIDEO_HEIGHT, 1) == bytes_req);
 #endif
 }
 
-int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
+uint8_t *H264Decoder::decode(uint8_t *nals, int nals_size) {
     av_packet.data = nals;
     av_packet.size = nals_size;
 
@@ -64,12 +64,11 @@ int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
         assert(frame_size == av_packet.size);
         sws_scale(sws_context, (const uint8_t *const *) frame->data, frame->linesize, 0, WII_VIDEO_HEIGHT,
                   out_frame->data, out_frame->linesize);
+
+        return out_frame->data[0];
     }
-    else
-        return 0;
-    int image_size = out_frame->linesize[0] * WII_VIDEO_HEIGHT;
-    memcpy(image, out_frame->data[0], (size_t) image_size);
-    return image_size;
+
+    return NULL;
 }
 
 void H264Decoder::log_av(void *avcl, int level, const char *fmt, va_list vl) {

@@ -14,7 +14,6 @@
 #include "../../Input.h"
 
 AudioHandlerWiiU::AudioHandlerWiiU() {
-    rand_audio = new unsigned char[512];
     for (int byte = 0; byte < 512; ++byte)
       rand_audio[byte] = (unsigned char) (rand() % 255);
 }

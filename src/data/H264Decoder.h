@@ -19,7 +19,7 @@ class H264Decoder {
 public:
     H264Decoder();
 
-    int image(uint8_t *nals, int nals_size, uint8_t *image);
+    uint8_t *decode(uint8_t *nals, int nals_size);
 
 private:
     AVPacket av_packet;

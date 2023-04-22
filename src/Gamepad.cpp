@@ -76,35 +76,32 @@ void Gamepad::connect() {
 }
 
 void Gamepad::update() {
-    timeval time;
-    time.tv_sec = 0;
-    time.tv_usec = 1;
     FD_ZERO(&read_set);
     FD_SET(socket_cmd, &read_set);
     FD_SET(socket_aud, &read_set);
     FD_SET(socket_vid, &read_set);
     FD_SET(socket_msg, &read_set);
     FD_SET(socket_hid, &read_set);
-    int amount = select(socket_hid + 1, &read_set, NULL, NULL, &time);
-    if (amount > 0 and !received_wii_u_packet) {
-        received_wii_u_packet = true;
-        Logger::info(Logger::DRC, "Received a Wii U packet");
+    if (select(socket_hid + 1, &read_set, NULL, NULL, NULL) > 0) {
+        if (!received_wii_u_packet) {
+            received_wii_u_packet = true;
+            Logger::info(Logger::DRC, "Received a Wii U packet");
+        }
+        if (FD_ISSET(socket_cmd, &read_set))
+            handle_packet(socket_cmd, (PacketHandler *) &command_handler);
+        if (FD_ISSET(socket_vid, &read_set))
+            handle_packet(socket_vid, (PacketHandler *) &video_handler);
+        if (FD_ISSET(socket_aud, &read_set))
+            handle_packet(socket_aud, (PacketHandler *) &audio_handler);
+        if (FD_ISSET(socket_msg, &read_set))
+            handle_packet(socket_msg, (PacketHandler *) &message_handler);
+        if (FD_ISSET(socket_hid, &read_set))
+            handle_packet(socket_hid, (PacketHandler *) &hid_handler);
     }
-    if (FD_ISSET(socket_cmd, &read_set))
-        handle_packet(socket_cmd, (PacketHandler *) &command_handler);
-    if (FD_ISSET(socket_vid, &read_set))
-        handle_packet(socket_vid, (PacketHandler *) &video_handler);
-    if (FD_ISSET(socket_aud, &read_set))
-        handle_packet(socket_aud, (PacketHandler *) &audio_handler);
-    if (FD_ISSET(socket_msg, &read_set))
-        handle_packet(socket_msg, (PacketHandler *) &message_handler);
-    if (FD_ISSET(socket_hid, &read_set))
-        handle_packet(socket_hid, (PacketHandler *) &hid_handler);
 }
 
 void Gamepad::handle_packet(int fd, PacketHandler *handler) {
-    unsigned char data[2048];
-    memset(data, 0, sizeof(data));
+    static unsigned char data[2048];
     ssize_t size = recv(fd, &data, sizeof(data), 0);
     (*handler).update(data, (size_t) size);
 }

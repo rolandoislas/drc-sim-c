@@ -47,6 +47,7 @@ void Input::update() {
         clock_gettime(CLOCK_MONOTONIC_RAW, &last_sent_time);
         send_hid_update();
     }
+    usleep(1000 * 10);
 }
 
 void Input::send_hid_update() {
